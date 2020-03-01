@@ -1,0 +1,263 @@
+<h1>3D Shapes</h1>
+
+<h2>Topic Coverage</h2>
+<ul>
+    <li>Abstract Classes</li>
+    <li>Interfaces</li>
+    <li>Composition</li>
+    <li>Design Principles</li>
+</ul>
+
+<h2>Problem Description</h2>
+<p>
+In this lab, we are going to explore different design options for modeling 3D objects.  In particular, we wish to model different 3D shapes.  We can compute the volume and surface area of a given shape.  For each shape, there is a possibility that the shape is solid with a given density.  From the density and the volume, we can compute its mass.
+</p>
+<p>
+For instance, a cuboid is a box-shaped object having six flat sides with all right-angled corners. From the three sides of the solid cuboid, one can compute the volume and surface area. In addition, a solid cuboid object is made up of a specific material, and by using the density of the material, the mass can be found.
+</p>
+
+<h2>Task</h2>
+<p>
+By using object-oriented modeling and applying the abstraction principle, design two different sets of classes/interfaces to facilitate the creation of a 3D shape and a solid 3D shape, starting with a cuboid and solid cuboid. Show how you can obtain the cuboid's volume, density as well as mass. Extend this concept to deal with other possible 3D shapes such as a sphere.
+</p>
+<p>
+Your design should contain as little repetition of code (including method implementation and member declaration) as possible.
+
+</p>
+<table border=1 width=300 cellpadding=10><tr><td>
+            <h2>Level 1</h2>
+            <h2>Represent a Cuboid</h2>
+            <p>
+            Create an <em>immutable</em> class <code>Cuboid</code>. Its constructor has three parameters height, width, and length (in that order). All are of type double. Like all 3D shapes, <code>Cuboid</code> has a method <code>getVolume()</code> and <code>getSurfaceArea()</code>.  The class has three new methods: <code>Cuboid setHeight(double height)</code>, <code>Cuboid setWidth(double width)</code>, and <code>Cuboid setLength(double length)</code>.
+            </p>
+            <p>
+            The string representation of a <code>Cuboid</code> is in the form:
+            <pre>
+Cuboid [Height x Width x Length]
+            </pre>
+            </p>
+            <p>
+            Height, Width, and Length will be to 2 decimal places. Recall from lab 1, the <code>toString()</code> method in the Point class.
+            </p>
+            <table border=1 cellpadding=10><tr><td>
+                        <pre>
+jshell> new Cuboid(2,2,2)
+$.. ==> Cuboid [2.00 x 2.00 x 2.00]
+jshell> new Cuboid(2,2,2).getVolume()
+$.. ==> 8.0
+jshell> new Cuboid(2,2,2).getSurfaceArea()
+$.. ==> 24.0
+jshell> new Cuboid(2,2,2).setHeight(3)
+$.. ==> Cuboid [3.00 x 2.00 x 2.00]
+jshell> new Cuboid(2,2,2).setWidth(3)
+$.. ==> Cuboid [2.00 x 3.00 x 2.00]
+jshell> new Cuboid(2,2,2).setLength(3)
+$.. ==> Cuboid [2.00 x 2.00 x 3.00]
+jshell> new Cuboid(2,2,2).setWidth(5).setHeight(3)
+$.. ==> Cuboid [3.00 x 5.00 x 2.00]
+jshell> new Cuboid(2,2,2).setWidth(5).setHeight(3).getVolume()
+$.. ==> 30.0
+jshell> /exit
+                        </pre>
+            </table>
+            <p>
+            Check the format correctness of the output by running the following on the command line:
+            <pre>
+$ javac *.java
+$ jshell -q [list of java files in order of dependency] &lt; level1.jsh
+            </pre>
+            Check your styling by issuing the following
+            <pre>
+$ checkstyle *.java
+            </pre>
+            <p>Click <a href="https://codecrunch.comp.nus.edu.sg/task_view.php?tid=4814" target="_blank">here</a> to submit to CodeCrunch.
+            </p>
+                    </td></tr>
+                    <tr><td>
+                            <h2>Level 2</h2>
+                            <h2>Represent a SolidCuboid</h2>
+                            <p>
+                            Create an <em>immutable</em> class <code>SolidCuboid</code>. The <code>SolidCuboid</code> class has a constructor that takes in four parameters height, width, length, and density (in that order). All are of type double.  Like all solid shapes, <code>SolidCuboid</code> has two methods <code>getDensity()</code> and <code>getMass()</code> that returns the density and the mass respectively.
+                            </p>
+                            <p>
+                            The string representation of a <code>SolidCuboid</code> is in the form:
+                            <pre>
+SolidCuboid [Height x Width x Length] with a mass of Mass
+                            </pre>
+                            </p>
+                            <table border=1 cellpadding=10><tr><td>
+                                        <pre>
+jshell> new SolidCuboid(2,2,2,0.5)
+$.. ==> SolidCuboid [2.00 x 2.00 x 2.00] with a mass of 4.00
+jshell> new SolidCuboid(2,2,2,0.5).getVolume()
+$.. ==> 8.0
+jshell> new SolidCuboid(2,2,2,0.5).getSurfaceArea()
+$.. ==> 24.0
+jshell> new SolidCuboid(2,2,2,0.5).getDensity()
+$.. ==> 0.5
+jshell> new SolidCuboid(2,2,2,0.5).getMass()
+$.. ==> 4.0
+jshell> new SolidCuboid(2,2,2,0.5).setHeight(2).getMass()
+$.. ==> 4.0
+jshell> /exit
+                                        </pre>
+                            </table>
+                            <p>
+                            Check the format correctness of the output by running the following on the command line:
+                            <pre>
+$ javac *.java
+$ jshell -q [list of java files in order of dependency] &lt; level2.jsh
+                            </pre>
+                            Check your styling by issuing the following
+                            <pre>
+$ checkstyle *.java
+                            </pre>
+                            <p>Click <a href="https://codecrunch.comp.nus.edu.sg/task_view.php?tid=4815" target="_blank">here</a> to submit to CodeCrunch.
+                            </p>
+                                    </td></tr>
+                                    <tr><td>
+                                            <h2>Level 3</h2>
+                                            <h2>Introducing a new shape Sphere</h2>
+                                            <p>
+                                            Create an <em>immutable</em> class <code>Sphere</code>, its constructor has one parameter radius of type double. The class has one new method: Sphere <code>setRadius(double radius)</code>.
+                                            </p>
+                                            <p>
+                                            The string representation of a <code>Sphere</code> is in the form:
+                                            <pre>
+Sphere [Radius]
+                                            </pre>
+                                            </p>
+                                            <p>
+                                            Radius will be to 2 decimal places.
+                                            </p>
+                                            <p>
+                                            You may wish to revisit your solution for the previous levels and change its design to improve adherence to the abstraction principle.
+                                            </p>
+                                            <table border=1 cellpadding=10><tr><td>
+                                                        <pre>
+jshell> new Sphere(2);
+$.. ==> Sphere [2.00]
+jshell> new Sphere(2).getVolume()
+$.. ==> 33.510321638291124
+jshell> new Sphere(2).getSurfaceArea()
+$.. ==> 50.26548245743669
+jshell> new Sphere(2).setRadius(3)
+$.. ==> Sphere [3.00]
+jshell> new Sphere(2).setRadius(3).getVolume()
+$.. ==> 113.09733552923255
+jshell> /exit
+                                                        </pre>
+                                            </table>
+                                            <p>
+                                            Check the format correctness of the output by running the following on the command line:
+                                            <pre>
+$ javac *.java
+$ jshell -q [list of java files in order of dependency] &lt; level3.jsh
+                                            </pre>
+                                            Check your styling by issuing the following
+                                            <pre>
+$ checkstyle *.java
+                                            </pre>
+                                            <p>Click <a href="https://codecrunch.comp.nus.edu.sg/task_view.php?tid=4816" target="_blank">here</a> to submit to CodeCrunch.
+                                            </p>
+                                                    </td></tr>
+                                                    <tr><td>
+                                                            <h2>Level 4</h2>
+                                                            <h2>Design the SolidSphere class</h2>
+                                                            <p>
+                                                            Create an <em>immutable</em> class <code>SolidSphere</code>. The <code>SolidSphere</code> class has a constructor which takes in two parameters radius, and density (in that order). All are of type double.
+                                                            </p>
+                                                            <p>
+                                                            The string representation of a <code>SolidSphere</code> is in the form:
+                                                            <pre>
+SolidSphere [Radius] with a mass of Mass
+                                                            </pre>
+                                                            </p>
+                                                            <p>
+                                                            You may wish to revisit your solution for the previous levels and change its design to improve adherence to the abstraction principle.
+                                                            </p>
+                                                            <table border=1 cellpadding=10><tr><td>
+                                                                        <pre>
+jshell> new SolidSphere(2,0.5)
+$.. ==> SolidSphere [2.00] with a mass of 16.76
+jshell> new SolidSphere(2,0.5).getVolume()
+$.. ==> 33.510321638291124
+jshell> new SolidSphere(2,0.5).getSurfaceArea()
+$.. ==> 50.26548245743669
+jshell> new SolidSphere(2,0.5).getDensity()
+$.. ==> 0.5
+jshell> new SolidSphere(2,0.5).getMass()
+$.. ==> 16.755160819145562
+jshell> new SolidSphere(2,0.5).setRadius(3)
+$.. ==> SolidSphere [3.00] with a mass of 56.55
+jshell> new SolidSphere(2,0.5).setRadius(3).getMass()
+$.. ==> 56.548667764616276
+jshell> /exit
+                                                                        </pre>
+                                                                    </td></tr></table>
+                                                                    <p>
+                                                                    Check the format correctness of the output by running the following on the command line:
+                                                                    <pre>
+$ javac *.java
+$ jshell -q [list of java files in order of dependency] &lt; level4.jsh
+                                                                    </pre>
+                                                                    Check your styling by issuing the following
+                                                                    <pre>
+$ checkstyle *.java
+                                                                    </pre>
+                                                                    <p>Click <a href="https://codecrunch.comp.nus.edu.sg/task_view.php?tid=4817" target="_blank">here</a> to submit to CodeCrunch.
+                                                                    </p>
+                                                        </td></tr>
+                                                        <tr><td>
+                                                                <h2>Level 5</h2>
+                                                                <h2>SolidShape3D using Composition</h2>
+                                                                <p>
+                                                                You should see that it is not easy to model the four classes, <code>Cuboid</code>, <code>SolidCuboid</code>, <code>Sphere</code>, and <code>SolidSphere</code>, above without some repetition of code, violating the abstraction principles.  In this level, we will explore a different design.
+                                                                </p>
+                                                                <p>
+                                                                A density is really a property of a material not of a shape. Let's create a <code>Material</code> class, with a constructor that takes in two parameters, the name of the material and the density of the material. The first term is a string and the second term is a double.
+                                                                </p>
+                                                                <p>
+                                                                What if we created a new class that contains both a <code>Shape3D</code> and a <code>Material</code>. Implement a class <code>SolidShape3D</code> which has a constructor that takes in a <code>Shape3D</code> and a <code>Material</code> (in that order). The class should implement a <code>double getMass()</code> and <code>double getDensity()</code> methods.
+                                                                </p>
+                                                                <p>
+                                                                Would this <code>SolidShape3D</code> class still work if we created a new class <code>Prism</code> that inherits from <code>Shape3D</code>?
+
+                                                                </p>
+                                                                <table border=1 cellpadding=10><tr><td>
+                                                                            <pre>
+jshell> Material glass = new Material("Glass",2.5)
+jshell> Material steel = new Material("Steel",7870)
+jshell> new SolidShape3D(new Cuboid(2,2,2),glass)
+$.. ==> SolidCuboid [2.00 x 2.00 x 2.00] with a mass of 20.00
+jshell> new SolidShape3D(new Cuboid(2,2,2),steel)
+$.. ==> SolidCuboid [2.00 x 2.00 x 2.00] with a mass of 62960.00
+jshell> new SolidShape3D(new Cuboid(2,2,2),steel).getMass()
+$.. ==> 62960.0
+jshell> new SolidShape3D(new Cuboid(2,2,2).setHeight(3),glass)
+$.. ==> SolidCuboid [3.00 x 2.00 x 2.00] with a mass of 30.00
+jshell> new SolidShape3D(new Sphere(2),glass)
+$.. ==> SolidSphere [2.00] with a mass of 83.78
+jshell> new SolidShape3D(new Sphere(2),steel)
+$.. ==> SolidSphere [2.00] with a mass of 263726.23
+jshell> new SolidShape3D(new Sphere(2),steel).getMass()
+$.. ==> 263726.23129335116
+jshell> new SolidShape3D(new Sphere(2).setRadius(3),glass)
+$.. ==> SolidSphere [3.00] with a mass of 282.74
+jshell> /exit
+                                                                            </pre>
+                                                                        </td></tr></table>
+
+                                                                        <p>
+                                                                        Check the format correctness of the output by running the following on the command line:
+                                                                        <pre>
+$ javac *.java
+$ jshell -q [list of java files in order of dependency] &lt; level5.jsh
+                                                                        </pre>
+                                                                        Check your styling by issuing the following
+                                                                        <pre>
+$ checkstyle *.java
+                                                                        </pre>
+                                                                        <p>Click <a href="https://codecrunch.comp.nus.edu.sg/task_view.php?tid=4818" target="_blank">here</a> to submit to CodeCrunch.
+                                                                        </p>
+                                                            </td></tr>
