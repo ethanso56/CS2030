@@ -1,0 +1,296 @@
+<h1>Immutable List</h1>
+<h2>Topic Coverage</h2>
+<ul>
+    <li>Generics</li>
+    <li>Exceptions</li>
+    <li>Functional Interfaces</li>
+    <li>Lambdas</li>
+    <li>Variable-Length Arguments</li>
+</ul>
+<h2>Problem Description</h2>
+<p>In this lab, we are going to explore functional interfaces, lambda expressions, and exceptions. This lab serves as an introduction to functional programming and will help you for when we encounter streams later in the module.</p>
+<h2>Task</h2>
+<p>The <code>List</code> implementations from the Java Collection Framework are mutable.  In this lab, you will build you own an immutable list class (<code>ImmutableList</code>) that implements various methods to manipulate this list, by wrapping an immutable API over a mutable <code>List</code> object.  This pattern is sometimes known as the <em>immutable delegation class</em> class and comes with a performance overhead.  Note that a much more efficient implementation of an immutable list is possible (using a recursive data structure), but let's leave that to a future lab on infinite lists.</p>
+<p>In this lab, by wrapping around an internal mutable <code>List</code>, implement the methods <code>add</code>, <code>remove</code>, <code>replace</code>, <code>map</code>, <code>filter</code>, <code>limit</code>, <code>sorted</code>, and <code>toArray</code>.</p>
+<table style="width: 600px;" border="1" cellpadding="10">
+    <tbody>
+        <tr>
+            <td>
+                <h2>Level 1</h2>
+                <h2>Creating a Generic Immutable List</h2>
+                <p>Create an <strong>immutable</strong> class <code>ImmutableList</code> that implements a list. The list should be <em>ordered</em>, i.e., the position of the items in the list matters.  Your immutable list should not implement the <code>List</code> interface but should contain a <code>List</code> instead.</p>
+                <p>Your class should have two constructors, both accept items to populate your new immutable list.  The first one takes in a generic <code>List</code> containing the items as an argument; the second takes in a sequence of items as <em>variable-length arguments</em> (or varargs). Variable-length arguments allow you to pass an unspecified number of arguments to a method or constructor.  You can <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/arguments.html">read up about varargs</a> if you are unfamiliar with this Java feature.</p>
+                <p>Using varargs with generic type parameters could be unsafe.  Varargs is a syntactic sugar for an array, which is covariant in Java and potentially unsafe as you have seen in class.  To tell the compiler that you know what you are doing is type-safe, when you declare a method that takes in varargs with a generic type parameter, add an annotation <code>@SafeVarargs</code> before the method.</p>
+                <p>Your class should have <code>add</code> (append an item to the list), <code>replace</code> (replace all occurences of an item with another), and <code>remove</code> (remove the first occurence of an item) methods.  Remember your list has to be immutable.</p>
+                <p>Your class should also have an appropriate <code>toString</code> method which prints out the contents of the List.</p>
+                <p>Remember, <em>you should not suppress warnings unless you know what you are doing.</em> (We will tell you when you can do so in a later level).</p>
+                <table style="width: 100%;" border="1" cellpadding="10">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre><strong>jshell&gt; /open ImmutableList.java</strong>
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3)</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(Arrays.asList(1,2,3))</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; List&lt;Integer&gt; mList = new ArrayList&lt;&gt;(Arrays.asList(1,2,3))</strong>
+<strong>jshell&gt; ImmutableList&lt;Integer&gt; imList = new ImmutableList&lt;&gt;(mList)</strong>
+<strong>jshell&gt; imList.remove(3)</strong>
+$.. ==&gt; [1, 2]
+<strong>jshell&gt; imList</strong>
+imList ==&gt; [1, 2, 3]
+<strong>jshell&gt; imList.remove(3).add(2)</strong>
+$.. ==&gt; [1, 2, 2]
+<strong>jshell&gt; imList</strong>
+imList ==&gt; [1, 2, 3]
+<strong>jshell&gt; imList.remove(6)</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; imList.add(1).replace(1,3)</strong>
+$.. ==&gt; [3, 2, 3, 3]
+<strong>jshell&gt; imList.add(1).replace(1,1)</strong>
+$.. ==&gt; [1, 2, 3, 1]
+<strong>jshell&gt; imList.replace(6,3)</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; mList.set(0,10)</strong>
+$.. ==&gt; 1
+<strong>jshell&gt; mList</strong>
+mList ==&gt; [10, 2, 3]
+<strong>jshell&gt; imList</strong>
+imList ==&gt; [1, 2, 3]
+<strong>jshell&gt; Integer[] array = {1, 2, 3}</strong>
+<strong>jshell&gt; ImmutableList&lt;Integer&gt; imList = new ImmutableList&lt;&gt;(array)</strong>
+<strong>jshell&gt; array[0] = 10</strong>
+$.. ==&gt; 10
+<strong>jshell&gt; imList</strong>
+imList ==&gt; [1, 2, 3]
+<strong>jshell&gt; new ImmutableList&lt;&gt;(List.of(4,5,6)).add(7)</strong>
+$.. ==&gt; [4, 5, 6, 7]
+<strong>jshell&gt; ImmutableList&lt;String&gt; stringList = new ImmutableList&lt;&gt;(Arrays.asList("One","Two","Three"))</strong>
+<strong>jshell&gt; stringList.add("Four");</strong>
+$.. ==&gt; [One, Two, Three, Four]
+<strong>jshell&gt; /exit</strong>
+
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the format correctness of the output by running the following on the command line:</p>
+                <pre>$ javac -Xlint:rawtypes *.java
+$ jshell -q ImmutableList.java &lt; level1.jsh
+                </pre>
+                <p>The <code>-Xlint:rawtypes</code> flag would warn you if you forget to specify generics and use raw types instead.</p>
+                <p>Check your styling by issuing the following</p>
+                <pre>$ checkstyle *.java
+                </pre>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2>Level 2</h2>
+                <h2>Implement Map and Filter Methods</h2>
+                <p>Now, let's create two new methods in the ImmutableList class.</p>
+                <p>First, the <code>filter</code> method. The <code>filter</code> method will return an <code>ImmutableList</code> with elements based on a <code>Predicate</code> you pass to it. Remember that <code>Predicate</code> is a generic functional interface, and therefore it has one method to implement: <code>test</code>.</p>
+                <p>Next, implement the <code>map</code> method. The <code>map</code> method will return an <code>ImmutableList</code> in which all elements are transformed based on a <code>Function</code> you pass to it. Again, <code>Function</code> is a generic functional interface, and therefore it has one method to implement: <code>apply</code>. Remember that the input type may not be the same as the output type: consider a mapping from <code>String</code> to <code>Integer</code> using the <code>length()</code> method.</p>
+                <p>Try passing your own <code>Predicate</code>s and <code>Function</code>s to these methods! You can use lambda expressions as in the following test cases below.</p>
+                <table style="width: 100%;" border="1" cellpadding="10">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre><strong>jshell&gt; /open ImmutableList.java</strong>
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).filter(x -&gt; x % 2 == 0)</strong>
+$.. ==&gt; [2]
+<strong>jshell&gt; new ImmutableList&lt;String&gt;("one", "two", "three").filter(x -&gt; x.hashCode()%10 &gt; 5)</strong>
+$.. ==&gt; [two, three]
+<strong>jshell&gt; Predicate&lt;Object&gt; p = x -&gt; x.hashCode()%10 == 0</strong>
+<strong>jshell&gt; new ImmutableList&lt;String&gt;("one", "two", "three").filter(p)</strong>
+$.. ==&gt; []
+<strong>jshell&gt; ImmutableList&lt;Integer&gt; list = new ImmutableList&lt;String&gt;("one", "two", "three").map(x -&gt; x.length())</strong>
+<strong>jshell&gt; /var list</strong>
+|    ImmutableList&lt;Integer&gt; list = [3, 3, 5]
+<strong>jshell&gt; Function&lt;Object,Integer&gt; f = x -&gt; x.hashCode()</strong>
+<strong>jshell&gt; ImmutableList&lt;Number&gt; list = new ImmutableList&lt;String&gt;("one", "two", "three").map(f)</strong>
+<strong>jshell&gt; /var list</strong>
+|    ImmutableList&lt;Number&gt; list = [110182, 115276, 110339486]
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).filter(x -&gt; x &gt; 3).map(x -&gt; x + 1)</strong>
+$.. ==&gt; []
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).filter(x -&gt; x &gt; 2).map(x -&gt; x + 1)</strong>
+$.. ==&gt; [4]
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).map(x -&gt; x + 1).filter(x -&gt; x &gt; 2)</strong>
+$.. ==&gt; [3, 4]
+<strong>jshell&gt; new ImmutableList&lt;String&gt;().filter(s -&gt; s.endsWith("s"))</strong>
+$.. ==&gt; []
+<strong>jshell&gt; new ImmutableList&lt;String&gt;().map(s -&gt; s.endsWith("s"))</strong>
+$.. ==&gt; []
+<strong>jshell&gt; /exit</strong>
+
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the format correctness of the output by running the following on the command line:</p>
+                <pre>$ javac -Xlint:rawtypes *.java
+$ jshell -q ImmutableList.java &lt; level2.jsh
+                </pre>
+                Check your styling by issuing the following
+                <pre>$ checkstyle *.java
+                </pre>
+                <p>&nbsp;</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2>Level 3</h2>
+                <h2>Implementing the Limit Method</h2>
+                <p>Let's create a new method <code>limit</code> in the <code>ImmutableList</code> class. The <code>limit</code> method takes in a <code>long</code> value and then returns an <code>ImmutableList</code> truncated to the length specified by that <code>long</code> value.</p>
+                <p>Consider the case where you pass in a negative number. In this case, let's throw an <code>IllegalArgumentException</code> with the exception message "<code>limit size &lt; 0</code>".</p>
+                <p>It is important to note that, the test cases below <em>catch unchecked exceptions for the purpose of testing only</em>.  It is an unusual coding practice to catch unchecked exceptions, as unchecked exceptions are usually caused by bugs or improper use of APIs, and the application usually cannot recover from such exceptions.</p>
+                <table style="width: 100%;" border="1" cellpadding="10">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre><strong>jshell&gt; /open ImmutableList.java</strong>
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).limit(1)</strong>
+$.. ==&gt; [1]
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).limit(10)</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; ImmutableList&lt;Integer&gt; list = new ImmutableList&lt;Integer&gt;(1,2,3)</strong>
+<strong>jshell&gt; list.limit(0)</strong>
+$.. ==&gt; []
+<strong>jshell&gt; list</strong>
+list ==&gt; [1, 2, 3]
+<strong>jshell&gt; list = list.limit(0)</strong>
+<strong>jshell&gt; try {</strong>
+<strong>   ...&gt;   new ImmutableList&lt;Integer&gt;(1,2,3).limit(-1);</strong>
+<strong>   ...&gt; } catch (IllegalArgumentException e) {</strong>
+<strong>   ...&gt;   System.out.println(e);</strong>
+<strong>   ...&gt; }</strong>
+java.lang.IllegalArgumentException: limit size &lt; 0
+<strong>jshell&gt; /exit</strong>
+
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the format correctness of the output by running the following on the command line:</p>
+                <pre>$ javac -Xlint:rawtypes *.java
+$ jshell -q ImmutableList.java &lt; level3.jsh
+                </pre>
+                Check your styling by issuing the following
+                <pre>$ checkstyle *.java
+                </pre>
+                <p>&nbsp;</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2>Level 4</h2>
+                <h2>Implement the Sorted Method</h2>
+                <p>Let's create a new method <code>sorted</code> in the <code>ImmutableList</code> class.</p>
+                <p>The <code>sorted</code> method takes in no argument, and will return an <code>ImmutableList</code> sorted by using the <em>natural order</em> of the items in the <code>ImmutableList</code>.  Thus, similar to <code>java.util.PriorityQueue</code>, we expect the items in the <code>ImmutableList</code> to implement the <code>Comparable</code> interface if this <code>sorted</code> method is invoked.</p>
+                <p>Consider the case where the items in <code>ImmutableList</code> is of a type which does not implement <code>Comparable</code>. In this case, let's throw an <code>IllegalStateException</code> with the exception message "<code>List elements do not implement Comparable</code>".</p>
+                <p>What if we would like to sort the list using an arbitrary <code>Comparator</code>?  Let's now create an overloaded <code>sorted</code> method that takes in a <code>Comparator</code> and returns the <code>ImmutableList</code> as sorted by this <code>Comparator</code>.</p>
+                <p>What happens if we pass a <code>null</code> <code>Comparator</code>? In this case, let's throw a <code>NullPointerException</code> with the exception message "<code>Comparator is null</code>".</p>
+                <p>In this level, you will need to use the <code>instanceof</code> operator and then perform type casting.  Type casting to a generic type causes Java compiler to alert you with a warning of possible failure during run time due to type safety.  For this instance, and <em>this instance only</em>, you can use <code>@SuppressWarnings("unchecked")</code> to turn off the warning.  It is a good programming practice to limit the scope of <code>@SuppressWarnings</code> to be the smallest possible.  For this lab onwards, you should only write <code>@SuppressWarnings</code> <em>above the line of a local variable assignment statement</em> that triggers the warning.</p>
+                <table style="width: 100%;" border="1" cellpadding="10">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre><strong>jshell&gt; /open ImmutableList.java</strong>
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(3,2,1).sorted()</strong>
+$.. ==&gt; [1, 2, 3]
+<strong>jshell&gt; class A { }</strong>
+<strong>jshell&gt; try {</strong>
+<strong>   ...&gt;   new ImmutableList&lt;A&gt;(new A(), new A()).sorted();</strong>
+<strong>   ...&gt; } catch (IllegalStateException e) { </strong>
+<strong>   ...&gt;   System.out.println(e);</strong>
+<strong>   ...&gt; }</strong>
+java.lang.IllegalStateException: List elements do not implement Comparable
+<strong>jshell&gt; ImmutableList&lt;Integer&gt; list = new ImmutableList&lt;Integer&gt;().sorted()</strong>
+<strong>jshell&gt; list</strong>
+list ==&gt; []
+<strong>jshell&gt; new ImmutableList&lt;A&gt;().sorted()</strong>
+$.. ==&gt; []
+<strong>jshell&gt; list</strong>
+list ==&gt; []
+<strong>jshell&gt; list = new ImmutableList&lt;Integer&gt;(1,2,3)</strong>
+<strong>jshell&gt; list.sorted((x,y) -&gt; y - x)</strong>
+$.. ==&gt; [3, 2, 1]
+<strong>jshell&gt; list</strong>
+list ==&gt; [1, 2, 3]
+<strong>jshell&gt; try {</strong>
+<strong>   ...&gt;   new ImmutableList&lt;Integer&gt;(1,2,3).sorted(null);</strong>
+<strong>   ...&gt; } catch (NullPointerException e) {</strong>
+<strong>   ...&gt;   System.out.println(e);</strong>
+<strong>   ...&gt; }</strong>
+java.lang.NullPointerException: Comparator is null
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(4,5,3,6,7,2,1).filter(x -&gt; x % 2 == 0).sorted().map(i -&gt; "P" + i);</strong>
+$.. ==&gt; [P2, P4, P6]
+<strong>jshell&gt; /exit</strong>
+
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the format correctness of the output by running the following on the command line:</p>
+                <pre>$ javac -Xlint:rawtypes *.java
+$ jshell -q ImmutableList.java &lt; level4.jsh
+                </pre>
+                Check your styling by issuing the following
+                <pre>$ checkstyle *.java
+                </pre>
+                <p>&nbsp;</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <h2>Level 5</h2>
+                <h2>Implement a toArray Method</h2>
+                <p>Create an overloaded method <code>toArray</code> which takes in either no argument, or an array as an argument. The <code>toArray</code> method without argument will return the items in the list as an array of type <code>Object[]</code>.  The <code>toArray</code> method with an array as an argument is a <strong><em>generic method</em></strong> that will return the items in the list in an array <em>of the same type</em> as the argument.  The behavior of <code>toArray</code> of your list is similar to that of <code>toArray</code> of <code>List</code>, with the only difference being the error message associated with the exception thrown.</p>
+                <p>When an array of the wrong type is being passed into the ImmutableList, Let's throw an <code>ArrayStoreException</code> with the exception message "<code>Cannot add element to array as it is the wrong type</code>".</p>
+                <p>What about how the method handles passing a <code>null</code> argument? Let's throw an <code>NullPointerException</code> with the exception message "<code>Input array cannot be null</code>".</p>
+                <table style="width: 100%;" border="1" cellpadding="10">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <pre><strong>jshell&gt; /open ImmutableList.java</strong>
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).toArray()</strong>
+$.. ==&gt; Object[3] { 1, 2, 3 }
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;().toArray()</strong>
+$.. ==&gt; Object[0] {  }
+<strong>jshell&gt; new ImmutableList&lt;Integer&gt;(1,2,3).toArray(new Integer[0])</strong>
+$.. ==&gt; Integer[3] { 1, 2, 3 }
+<strong>jshell&gt; try {</strong>
+<strong>   ...&gt;   new ImmutableList&lt;Integer&gt;(1,2,3).toArray(new String[0]);</strong>
+<strong>   ...&gt; } catch (ArrayStoreException e) {</strong>
+<strong>   ...&gt;   System.out.println(e);</strong>
+<strong>   ...&gt; }</strong>
+java.lang.ArrayStoreException: Cannot add element to array as it is the wrong type
+<strong>jshell&gt; try {</strong>
+<strong>   ...&gt;   new ImmutableList&lt;Integer&gt;(1,2,3).toArray(null);</strong>
+<strong>   ...&gt; } catch (NullPointerException e) {</strong>
+<strong>   ...&gt;   System.out.println(e);</strong>
+<strong>   ...&gt; }</strong>
+java.lang.NullPointerException: Input array cannot be null
+<strong>jshell&gt; /exit</strong>
+
+                                </pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Check the format correctness of the output by running the following on the command line:</p>
+                <pre>$ javac -Xlint:rawtypes *.java
+$ jshell -q ImmutableList.java &lt; level5.jsh
+                </pre>
+                Check your styling by issuing the following
+                <pre>$ checkstyle *.java
+                </pre>
+                <p>&nbsp;</p>
+            </td>
+        </tr>
+    </tbody>
+</table>		</div></div>
