@@ -1,0 +1,13 @@
+private static boolean isPrime(int n) {
+    return IntStream
+        .range(2, n)
+        .noneMatch(x -> n % x == 0);
+}
+
+public static int[] twinPrimes(int n) {
+    return IntStream
+        .rangeClosed(3, n)
+        .filter(x -> isPrime(x))
+        .filter(x -> isPrime(x - 2) || isPrime(x + 2))
+        .toArray();
+}
