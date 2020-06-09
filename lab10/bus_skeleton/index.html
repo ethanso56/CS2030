@@ -1,0 +1,81 @@
+<h3>CS2030 Lab #10: Bus</h3>
+
+<h4>Problem Description</h4>
+
+<p>
+We have a Web API online for querying bus services and bus stops in Singapore.  You can go ahead and try:
+<ul>
+	<li><a href="https://cs2030-bus-api.herokuapp.com/bus_services/96">https://cs2030-bus-api.herokuapp.com/bus_services/96</a> returns the list of bus stops (id followed by description) served by Bus 96.</li>
+	<li><a href="https://cs2030-bus-api.herokuapp.com/bus_stops/16189">https://cs2030-bus-api.herokuapp.com/bus_stops/16189</a> returns the description of the stop followed by a list of bus services that serve the stop.</li>
+</ul>
+(note: our database is two years old though -- don't rely on this for your daily commute!)
+</p>
+
+<p>
+In this lab, we will write a program that uses the Web API to do the following: Given the current stop <tt>S</tt>, and a search string <tt>Q</tt>, returns the list of buses serving <tt>S</tt> that also serves any stop with description containing <tt>Q</tt>.  For instance, given <tt>16189</tt> and <tt>Clementi</tt>, the program will output
+<pre>
+Search for: 16189 <-> Clementi:
+From 16189
+- Can take 96 to:
+  - 17171 Clementi Stn
+  - 17091 Aft Clementi Ave 1
+  - 17009 Clementi Int
+- Can take 151 to:
+  - 17091 Aft Clementi Ave 1
+- Can take 151e to:
+  - 17091 Aft Clementi Ave 1
+
+Took 11,084ms
+</pre>
+</p>
+<p>
+The pairs of S and Q can be either entered through the standard input or given to the program in a text file, with every pair of S and Q in a separate line.
+</p>
+<p>
+This program has been written and <a href="XXXX">is avalable here</a>.  Download and study the program to understand what it does and how it works.  Tips: Keep a copy of program around for comparison and reference later.
+</p>
+<p>
+The given program is written synchronously.  Every query to the Web API is done one-by-one, and the program has to wait until one query completes before it can continue execution of the program.  As a result, the program is slower than it should.
+</p>
+<p>
+Your task, for this lab, is to change the given program so that it executes asynchronously.  Doing so can significantly speed up the program.  
+</p>
+
+<p>
+The root of synchronous Web API access can be found in the method <tt>httpGet</tt> in <tt>BusAPI.java</tt>, in which the invocation of method <tt><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html#send(java.net.http.HttpRequest,java.net.http.HttpResponse.BodyHandler)">send</a></tt> from the class <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html"><tt>HttpClient</tt></a> is done synchronously (i.e., it blocks until the response returns).    
+</p>
+
+<p>
+<tt>HttpClient</tt> also provides an asynchronous version of <tt>send</tt> called <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html#sendAsync(java.net.http.HttpRequest,java.net.http.HttpResponse.BodyHandler)"><tt>sendAsync</tt></a>, which is exactly the same as <tt>send</tt> excepts that it is asynchronous and returns a <tt>CompletableFuture&lt;HttpResponse&lt;T&gt;&gt;</tt> instead of <tt>HttpResponse&lt;T&gt;</tt>.  (You do not need to get into the nitty-gritty details of the <tt>HttpClient</tt> and <tt>HttpResponse</tt> for this lab -- but they are good to know, read up about them at your leisure).
+</p>
+
+<p>To make the program synchronous, you should first change the invocation of <tt>send</tt> in <tt>BusAPI</tt> to <tt>sendAsync</tt>.  All other changes will be triggered by this.  The list of things you should change are:
+<ul>
+	<li><tt>BusAPI::getBusStopsServedBy</tt> now returns a <tt>CompletableFuture&lt;String&gt;</tt></li>
+	<li><tt>BusAPI::getBusServicesAt</tt> now returns a <tt>CompletableFuture&lt;String&gt;</tt></li>
+	<li><tt>BusStop::getBusServices</tt> now returns a <tt>CompletableFuture&lt;Set&lt;BusService&gt;&gt;</tt></li>
+	<li><tt>BusService::getBusStops</tt> now returns a <tt>CompletableFuture&lt;Set&lt;BusStop&gt;&gt;</tt></li>
+	<li><tt>BusService::findStopsWith</tt> now returns a <tt>CompletableFuture&lt;Set&lt;BusStop&gt;&gt;</tt></li>
+	<li><tt>BusRoutes</tt> now stores a <tt>CompletableFuture&lt;Set&lt;BusStop&gt;&gt;</tt> instead.</tt></li>
+	<li><tt>BusRoutes::description</tt> now returns a <tt>CompletableFuture&lt;String&gt;</tt> (hint: use <tt>thenCombine</tt>)</li>
+	<li><tt>BusSg::findBusServicesBetween</tt> now returns a <tt>CompletableFuture&lt;BusRoutes&gt;</tt></li>
+</ul>
+</p>
+<p>
+It is important that at no point in any of the code above, you call <tt>CompletableFuture::join</tt> on any of the <tt>CompletableFuture</tt>, so everything that has been done so far, from the lower-level Web API calls to the higher-level logic of searching for bus services, are done asynchronously.
+</p>
+<p>
+For this lab, the only place where you should <tt>join</tt> is in <tt>main()</tt>, where you now have multiple <tt>CompletableFuture</tt> objects, one from each call to <tt>findBusServicesBetween</tt>.  As the final step, you should change <tt>main()</tt> so that it waits for all the <tt>CompletableFuture</tt> objects to complete using <tt>allOf</tt> and <tt>join</tt>, followed by printing out the description of the bus routes found.
+</p>
+<p>
+The speed up your would experience for the asynchronous version depends on the complexity of the inputs.  For the following test input:
+<pre>
+08031 Orchard
+17009 NUS
+17009 MRT
+15131 Stn
+08031 Int
+12345 Dummy
+</pre>
+I am able to reduce the time from around 150-180 seconds to 10-15 seconds, more than 10 times speed up.  Your milage may vary, but you should see some speed up in the total query time.
+</p>
